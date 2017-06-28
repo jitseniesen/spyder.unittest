@@ -8,9 +8,11 @@
 # Third party imports
 from qtpy.QtWidgets import QVBoxLayout
 from spyder.config.base import get_translation
+from spyder.config.main import CONF
 from spyder.plugins import SpyderPluginWidget
 from spyder.py3compat import getcwd
 from spyder.utils import icon_manager as ima
+from spyder.utils.misc import get_python_executable
 from spyder.utils.qthelpers import create_action
 
 # Local imports
@@ -33,6 +35,7 @@ class UnitTestPlugin(SpyderPluginWidget):
         self.unittestwidget = UnitTestWidget(self.main)
         self.update_pythonpath()
         self.update_default_wdir()
+        self.update_python_executable()
 
         # Connect to relevant signals
         self.main.sig_pythonpath_changed.connect(self.update_pythonpath)
@@ -74,6 +77,13 @@ class UnitTestPlugin(SpyderPluginWidget):
         if not wdir:  # if no project opened
             wdir = getcwd()
         self.unittestwidget.default_wdir = wdir
+
+    def update_python_executable(self):
+        if CONF.get('main_interpreter', 'default'):
+            python_executable = get_python_executable()
+        else:
+            python_executable = CONF.get('main_interpreter', 'executable')
+        print('executable =', python_executable)
 
     # ----- SpyderPluginWidget API --------------------------------------------
     def get_plugin_title(self):
